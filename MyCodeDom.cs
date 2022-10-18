@@ -141,6 +141,7 @@ namespace MyCODEDOM
 
                 method.Statements.Add(ifElse);
             }
+            //
             else //pre not contain condition
             {
                 foreach (var item in fs.post.cases)
