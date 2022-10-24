@@ -132,6 +132,10 @@ namespace MyCODEDOM
                        ifElse.TrueStatements.Add(new CodeSnippetExpression(fs.post.GetStringInit(item)));
                     }
                 }
+                ifElse.TrueStatements.Add(new CodeMethodInvokeExpression(
+                new CodeTypeReferenceExpression("System.Console"),
+                "WriteLine", new CodePrimitiveExpression("Ket qua la {0}"), new CodeSnippetExpression(fs.output.var_name)));
+
                 ifElse.TrueStatements.Add(new CodeMethodReturnStatement(new CodeArgumentReferenceExpression(fs.output.var_name)));
 
                 ifElse.FalseStatements.Add(new CodeMethodInvokeExpression(
@@ -141,7 +145,7 @@ namespace MyCODEDOM
 
                 method.Statements.Add(ifElse);
             }
-            //
+            
             else //pre not contain condition
             {
                 foreach (var item in fs.post.cases)
@@ -159,6 +163,10 @@ namespace MyCODEDOM
                         method.Statements.Add(new CodeSnippetExpression(fs.post.GetStringInit(item)));
                     }
                 }
+                method.Statements.Add(new CodeMethodInvokeExpression(
+                new CodeTypeReferenceExpression("System.Console"),
+                "WriteLine", new CodePrimitiveExpression("Ket qua la {0}"), new CodeSnippetExpression(fs.output.var_name)));
+
                 method.Statements.Add(new CodeMethodReturnStatement(new CodeArgumentReferenceExpression(fs.output.var_name)));
             }
             class1.Members.Add(method);
@@ -219,11 +227,11 @@ namespace MyCODEDOM
             String sourceFile;
             if (provider.FileExtension[0] == '.')
             {
-                sourceFile = "TestGraph" + provider.FileExtension;
+                sourceFile = "FormalSpecification" + provider.FileExtension;
             }
             else
             {
-                sourceFile = "TestGraph." + provider.FileExtension;
+                sourceFile = "FormalSpecification." + provider.FileExtension;
             }
 
             // Create an IndentedTextWriter, constructed with
