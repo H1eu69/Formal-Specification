@@ -193,7 +193,7 @@ namespace Formal_Specification
             {
                 solutionRichTextBox.Select(start, 7);
                 solutionRichTextBox.SelectionColor = Color.CadetBlue;
-                start = solutionRichTextBox.Find("Console", start + 1, RichTextBoxFinds.MatchCase);
+                start = solutionRichTextBox.Find("Convert", start + 1, RichTextBoxFinds.MatchCase);
             }
 
             start = solutionRichTextBox.Find("return", RichTextBoxFinds.MatchCase);
@@ -274,6 +274,22 @@ namespace Formal_Specification
                 solutionRichTextBox.Select(start, 4);
                 solutionRichTextBox.SelectionColor = Color.Blue;
                 start = solutionRichTextBox.Find("bool", start + 1, RichTextBoxFinds.WholeWord);
+            }
+
+            start = solutionRichTextBox.Find("for", RichTextBoxFinds.WholeWord);
+            while (start != -1)
+            {
+                solutionRichTextBox.Select(start, 3);
+                solutionRichTextBox.SelectionColor = Color.Blue;
+                start = solutionRichTextBox.Find("for", start + 1, RichTextBoxFinds.WholeWord);
+            }
+
+            start = solutionRichTextBox.Find("new", RichTextBoxFinds.WholeWord);
+            while (start != -1)
+            {
+                solutionRichTextBox.Select(start, 3);
+                solutionRichTextBox.SelectionColor = Color.Blue;
+                start = solutionRichTextBox.Find("new", start + 1, RichTextBoxFinds.WholeWord);
             }
 
             start = solutionRichTextBox.Find("\"");

@@ -39,6 +39,7 @@ namespace MyCODEDOM
             method.ReturnType = new CodeTypeReference(fs.output.GetTypeFormat());
             method.Attributes = MemberAttributes.Static| MemberAttributes.Public;
 
+            DataType arraySize = new DataType();
             foreach (var para in fs.parameters)
             {
                 method.Parameters.Add(new CodeParameterDeclarationExpression(para.GetTypeFormat(), para.var_name));
@@ -46,6 +47,7 @@ namespace MyCODEDOM
                 //get argument input in main func
                 if (para.GetTypeFormat() == "System.Double")
                 {
+                    arraySize = para;
                     CodeVariableDeclarationStatement codeVariableDeclaration
                         = new CodeVariableDeclarationStatement(para.GetTypeFormat(),
                         para.var_name,
@@ -59,6 +61,8 @@ namespace MyCODEDOM
                 }
                 else if (para.GetTypeFormat() == "System.Int32")
                 {
+                    arraySize = para;
+
                     CodeVariableDeclarationStatement codeVariableDeclaration
                         = new CodeVariableDeclarationStatement(para.GetTypeFormat(),
                         para.var_name,
@@ -72,6 +76,8 @@ namespace MyCODEDOM
                 }
                 else if (para.GetTypeFormat() == "System.Boolean")
                 {
+                    arraySize = para;
+
                     CodeVariableDeclarationStatement codeVariableDeclaration
                         = new CodeVariableDeclarationStatement(para.GetTypeFormat(),
                         para.var_name,
@@ -83,8 +89,10 @@ namespace MyCODEDOM
                     "ReadLine")));
                     start.Statements.Add(codeVariableDeclaration);
                 }
-                else
+                else if(para.GetTypeFormat() == "System.Boolean")
                 {
+                    arraySize = para;
+
                     CodeVariableDeclarationStatement codeVariableDeclaration
                         = new CodeVariableDeclarationStatement(para.GetTypeFormat(),
                         para.var_name,
@@ -92,8 +100,13 @@ namespace MyCODEDOM
                     new CodeTypeReferenceExpression("Console"),
                     "ReadLine"));
                     start.Statements.Add(codeVariableDeclaration);
-                }                           
+                }
+                 
             }
+
+           
+
+            
 
             //Func definition
             CodeVariableDeclarationStatement variable = new CodeVariableDeclarationStatement();
@@ -117,19 +130,26 @@ namespace MyCODEDOM
             {
                 CodeConditionStatement ifElse = new CodeConditionStatement(
                     new CodeSnippetExpression(fs.pre.condition));
-                foreach(var item in fs.post.cases)
+                foreach(var item in fs.post.cases) // post handle
                 {
-                    if (item.Contains("&&"))
+                    if (!hasArray(fs))
                     {
-                        CodeConditionStatement insideIfElse = new CodeConditionStatement(
-                        new CodeSnippetExpression(fs.post.GetCondition(item)));
-                        insideIfElse.TrueStatements.Add(
-                            new CodeSnippetExpression(fs.post.GetStringInit(item)));
-                        ifElse.TrueStatements.Add(insideIfElse);
+                        if (item.Contains("&&"))
+                        {
+                            CodeConditionStatement insideIfElse = new CodeConditionStatement(
+                            new CodeSnippetExpression(fs.post.GetCondition(item)));
+                            insideIfElse.TrueStatements.Add(
+                                new CodeSnippetExpression(fs.post.GetStringInit(item)));
+                            ifElse.TrueStatements.Add(insideIfElse);
+                        }
+                        else
+                        {
+                            ifElse.TrueStatements.Add(new CodeSnippetExpression(fs.post.GetStringInit(item)));
+                        }
                     }
                     else
                     {
-                       ifElse.TrueStatements.Add(new CodeSnippetExpression(fs.post.GetStringInit(item)));
+
                     }
                 }
                 ifElse.TrueStatements.Add(new CodeMethodInvokeExpression(
@@ -150,17 +170,24 @@ namespace MyCODEDOM
             {
                 foreach (var item in fs.post.cases)
                 {
-                    if (item.Contains("&&"))
+                    if (!hasArray(fs))
                     {
-                        CodeConditionStatement insideIfElse = new CodeConditionStatement(
-                            new CodeSnippetExpression(fs.post.GetCondition(item)));
-                        insideIfElse.TrueStatements.Add(
-                        new CodeSnippetExpression(fs.post.GetStringInit(item)));
-                        method.Statements.Add(insideIfElse);
+                        if (item.Contains("&&"))
+                        {
+                            CodeConditionStatement insideIfElse = new CodeConditionStatement(
+                                new CodeSnippetExpression(fs.post.GetCondition(item)));
+                            insideIfElse.TrueStatements.Add(
+                            new CodeSnippetExpression(fs.post.GetStringInit(item)));
+                            method.Statements.Add(insideIfElse);
+                        }
+                        else
+                        {
+                            method.Statements.Add(new CodeSnippetExpression(fs.post.GetStringInit(item)));
+                        }
                     }
                     else
                     {
-                        method.Statements.Add(new CodeSnippetExpression(fs.post.GetStringInit(item)));
+
                     }
                 }
                 method.Statements.Add(new CodeMethodInvokeExpression(
@@ -177,6 +204,113 @@ namespace MyCODEDOM
             foreach (var name in fs.parameters)
             {
                 argumentList.Add(new CodeArgumentReferenceExpression(name.var_name));
+            }
+
+            if (hasArray(fs))
+            {
+                CodeMemberMethod initArrayMethod = new CodeMemberMethod();
+                initArrayMethod.Name = "NhapMang";
+                initArrayMethod.ReturnType = new CodeTypeReference();
+                initArrayMethod.Attributes = MemberAttributes.Static | MemberAttributes.Public;
+                class1.Members.Add(initArrayMethod);
+                foreach (var para in fs.parameters)
+                {
+                    initArrayMethod.Parameters.Add(new CodeParameterDeclarationExpression(para.GetTypeFormat(), para.var_name));
+
+                    if (para.GetTypeFormat() == "System.Double[]")
+                    {
+                        CodeVariableDeclarationStatement codeVariableDeclaration
+                            = new CodeVariableDeclarationStatement(para.GetTypeFormat(),
+                            para.var_name,
+                            new CodeArrayCreateExpression("System.Double", 1000));
+
+                        start.Statements.Add(codeVariableDeclaration);
+
+                        CodeVariableDeclarationStatement testInt =
+                    new CodeVariableDeclarationStatement(typeof(int),
+                    "i",
+                    new CodePrimitiveExpression(0));
+
+                        // Creates a for loop that sets testInt to 0 and continues incrementing testInt by 1 each loop until testInt is not less than 10.
+                        CodeIterationStatement forLoop = new CodeIterationStatement(
+
+                            new CodeAssignStatement(
+                                new CodeVariableReferenceExpression("i"),
+                            new CodePrimitiveExpression(0)),
+
+                            new CodeBinaryOperatorExpression(
+                                new CodeVariableReferenceExpression("i"),
+                                CodeBinaryOperatorType.LessThan,
+                                new CodeVariableReferenceExpression(arraySize.var_name)),
+
+                            new CodeAssignStatement(
+                                new CodeVariableReferenceExpression("i"),
+                            new CodeBinaryOperatorExpression(
+                                new CodeVariableReferenceExpression("i"),
+                                CodeBinaryOperatorType.Add,
+                                new CodePrimitiveExpression(1))),
+
+
+                            new CodeStatement[] { 
+                                new CodeSnippetStatement("\ta[i] = System.Convert.ToDouble(Console.ReadLine());\r\n") 
+                            });
+
+                        initArrayMethod.Statements.Add(testInt);
+                        initArrayMethod.Statements.Add(forLoop);
+                        var initArrayMethodInvoke = new CodeMethodInvokeExpression(null,
+                            "NhapMang", argumentList.ToArray());
+
+                        start.Statements.Add(initArrayMethodInvoke);
+                    }
+                    else if (para.GetTypeFormat() == "System.Int32[]")
+                    {
+                        CodeVariableDeclarationStatement codeVariableDeclaration
+                            = new CodeVariableDeclarationStatement(para.GetTypeFormat(),
+                            para.var_name,
+                            new CodeArrayCreateExpression("System.Double", 1000));
+
+                        start.Statements.Add(codeVariableDeclaration);
+
+                        CodeVariableDeclarationStatement testInt =
+                    new CodeVariableDeclarationStatement(typeof(int),
+                    "i",
+                    new CodePrimitiveExpression(0));
+
+                        // Creates a for loop that sets testInt to 0 and continues incrementing testInt by 1 each loop until testInt is not less than 10.
+                        CodeIterationStatement forLoop = new CodeIterationStatement(
+
+                            new CodeAssignStatement(
+                                new CodeVariableReferenceExpression("i"),
+                            new CodePrimitiveExpression(0)),
+
+                            new CodeBinaryOperatorExpression(
+                                new CodeVariableReferenceExpression("i"),
+                                CodeBinaryOperatorType.LessThan,
+                                new CodeVariableReferenceExpression(arraySize.var_name)),
+
+                            new CodeAssignStatement(
+                                new CodeVariableReferenceExpression("i"),
+                            new CodeBinaryOperatorExpression(
+                                new CodeVariableReferenceExpression("i"),
+                                CodeBinaryOperatorType.Add,
+                                new CodePrimitiveExpression(1))),
+
+
+                            new CodeStatement[] {
+                                new CodeSnippetStatement("\ta[i] = System.Convert.ToInt32(Console.ReadLine());\r\n")
+                            });
+
+                        initArrayMethod.Statements.Add(testInt);
+                        initArrayMethod.Statements.Add(forLoop);
+                        var initArrayMethodInvoke = new CodeMethodInvokeExpression(null,
+                            "NhapMang", argumentList.ToArray());
+
+                        start.Statements.Add(initArrayMethodInvoke);
+                    }
+                }
+
+                
+
             }
 
             var methodInvokeMain = new CodeMethodInvokeExpression(null,
@@ -261,6 +395,15 @@ namespace MyCODEDOM
             return cr;
         }
 
+        public static bool hasArray(FSComponent fs)
+        {
+            foreach(var paras in fs.parameters)
+            {
+                if (paras.GetTypeFormat() == "System.Double[]" || (paras.GetTypeFormat() == "System.Int32[]"))
+                    return true;
+            }
+            return false;
+        }
 
     }
  }

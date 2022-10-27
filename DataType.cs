@@ -23,6 +23,14 @@ namespace Formal_Specification
                 return "System.Boolean";
             if (var_type == "char*")
                 return "System.String";
+            //Array
+            if (var_type == "R*")
+                return "System.Double[]";
+            if (var_type == "Z*")
+                return "System.Int32[]";
+            if (var_type == "N*")
+                return "System.Int32[]";
+
             return "";
         }
 
