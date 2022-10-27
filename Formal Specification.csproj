@@ -60,6 +60,7 @@
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
     <Compile Include="FSComponent.cs" />
+    <Compile Include="LoopCondition.cs" />
     <Compile Include="MyCodeDom.cs" />
     <Compile Include="Post.cs" />
     <Compile Include="Pre.cs" />

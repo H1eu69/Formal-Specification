@@ -13,6 +13,7 @@ namespace Formal_Specification
 
         public string GetTypeFormat()
         {
+            //Non-Array
             if (var_type == "R")
                 return "System.Double";
             if (var_type == "Z")

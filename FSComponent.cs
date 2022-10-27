@@ -10,6 +10,7 @@ namespace Formal_Specification
     {
         public string func_name { get; set; }
         public List<DataType> parameters { get; set; }
+
         public DataType output { get; set; }
         public Pre pre { get; set; }
         public Post post { get; set; }
@@ -23,14 +24,11 @@ namespace Formal_Specification
 
             string firstLine = GetLine(input, 1);
             string secLine = GetLine(input, 2);
-            string thirdLine = string.Join(Environment.NewLine, lines);
 
             parameters = new List<DataType>();
             output = new DataType();
             pre = new Pre(secLine);
-            post = new Post(thirdLine);
 
-            //Xu ly first line
             while (firstLine.Contains(" "))
             {
                 firstLine = firstLine.Replace(" ", "");
@@ -66,12 +64,32 @@ namespace Formal_Specification
                 parametersList = parametersList + ",";
             }
 
+            if (hasArray())
+            {
+                string thirdLine = string.Join(Environment.NewLine, lines);
+                post = new Post(thirdLine, true);
+            }
+            else
+            {
+                string thirdLine = string.Join(Environment.NewLine, lines);
+                post = new Post(thirdLine, false);
+            }
         }
 
         string GetLine(string text, int lineNo)
         {
             string[] lines = text.Replace("\r", "").Split('\n');
             return lines.Length >= lineNo ? lines[lineNo - 1] : null;
+        }
+
+        public bool hasArray()
+        {
+            foreach (var paras in parameters)
+            {
+                if (paras.GetTypeFormat() == "System.Double[]" || (paras.GetTypeFormat() == "System.Int32[]"))
+                    return true;
+            }
+            return false;
         }
 
 
