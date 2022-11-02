@@ -14,6 +14,7 @@ namespace Formal_Specification
 
         public List<string> cases { get; set; }
         public List<LoopCondition> loops { get; set; }
+        public string conclude { get; set; }
 
         public Post(string input, bool isArray)
         {
@@ -76,19 +77,23 @@ namespace Formal_Specification
 
                 }
                 int count = dotIndex.Count;
-                string originTemp = temp;
+                string removeTemp = temp;
                 for ( i = 0; i < count; i++)
                 {
                     LoopCondition loopCondition = new LoopCondition();
                     loopCondition.type = temp.Substring(0, 2);
                     loopCondition.var_name = temp.Substring(2, temp.IndexOf("TH") - 2);
                     loopCondition.condition = temp.Substring(temp.IndexOf('{'), temp.IndexOf('}') - temp.IndexOf('{') + 1);
+
+                    string condition_temp = loopCondition.condition;
+                    loopCondition.start = condition_temp.Substring( 1, condition_temp.IndexOf('.') - 1);
+                    loopCondition.end = condition_temp.Substring(condition_temp.LastIndexOf('.') + 1, condition_temp.IndexOf('}') - condition_temp.LastIndexOf('.') - 1);
                     loops.Add(loopCondition);
 
-                    temp = originTemp.Remove(0, dotIndex.First() + 1);
+                    temp = removeTemp.Remove(0, dotIndex.First() + 1);
                     dotIndex.RemoveAt(0);
                 }
-                
+                conclude = temp;
             }
         }
 

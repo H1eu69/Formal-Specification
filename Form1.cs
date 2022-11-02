@@ -292,6 +292,14 @@ namespace Formal_Specification
                 start = solutionRichTextBox.Find("new", start + 1, RichTextBoxFinds.WholeWord);
             }
 
+            start = solutionRichTextBox.Find("NhapMang", RichTextBoxFinds.WholeWord);
+            while (start != -1)
+            {
+                solutionRichTextBox.Select(start, 8);
+                solutionRichTextBox.SelectionColor = Color.OrangeRed;
+                start = solutionRichTextBox.Find("NhapMang", start + 1, RichTextBoxFinds.WholeWord);
+            }
+
             start = solutionRichTextBox.Find("\"");
             int end = solutionRichTextBox.Find("\"",start + 1, RichTextBoxFinds.None);
             while (start != -1)

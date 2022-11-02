@@ -109,21 +109,20 @@ namespace MyCODEDOM
             
 
             //Func definition
-            CodeVariableDeclarationStatement variable = new CodeVariableDeclarationStatement();
-            variable.Type = new CodeTypeReference(fs.output.GetTypeFormat());
-            variable.Name = fs.output.var_name;
+            CodeVariableDeclarationStatement var_output = new CodeVariableDeclarationStatement();
+            var_output.Type = new CodeTypeReference(fs.output.GetTypeFormat());
+            var_output.Name = fs.output.var_name;
             
             //Get var init
             if (fs.output.GetTypeFormat() == "System.String")
-                variable.InitExpression = new CodePrimitiveExpression("");
+                var_output.InitExpression = new CodePrimitiveExpression("");
             if (fs.output.GetTypeFormat() == "System.Double")
-                variable.InitExpression = new CodePrimitiveExpression(0);
+                var_output.InitExpression = new CodePrimitiveExpression(0);
             if (fs.output.GetTypeFormat() == "System.Int32")
-                variable.InitExpression = new CodePrimitiveExpression(0);
+                var_output.InitExpression = new CodePrimitiveExpression(0);
             if (fs.output.GetTypeFormat() == "System.Boolean")
-                variable.InitExpression = new CodePrimitiveExpression(false);
+                var_output.InitExpression = new CodePrimitiveExpression(true);
 
-            method.Statements.Add(variable);
 
             //Pre, post handle
             if (!fs.pre.isEmptyOrWhiteSpace()) //pre contain condition
@@ -132,8 +131,13 @@ namespace MyCODEDOM
                     new CodeSnippetExpression(fs.pre.condition));
                 foreach(var item in fs.post.cases) // post handle
                 {
-                    if (!hasArray(fs))
+                    if (hasArray(fs))
                     {
+                        
+                    }
+                    else
+                    {
+                        method.Statements.Add(var_output);
                         if (item.Contains("&&"))
                         {
                             CodeConditionStatement insideIfElse = new CodeConditionStatement(
@@ -146,10 +150,6 @@ namespace MyCODEDOM
                         {
                             ifElse.TrueStatements.Add(new CodeSnippetExpression(fs.post.GetStringInit(item)));
                         }
-                    }
-                    else
-                    {
-
                     }
                 }
                 ifElse.TrueStatements.Add(new CodeMethodInvokeExpression(
@@ -168,9 +168,191 @@ namespace MyCODEDOM
             
             else //pre not contain condition
             {
-                foreach (var item in fs.post.cases)
+                if (hasArray(fs))
                 {
-                    if (!hasArray(fs))
+                    var item = fs.post.loops.First();
+                    CodeVariableDeclarationStatement testInt =
+                    new CodeVariableDeclarationStatement(typeof(int),
+                    item.var_name,
+                    new CodePrimitiveExpression(0));
+
+                    CodeIterationStatement forLoop = new CodeIterationStatement(
+
+                        new CodeAssignStatement(
+                            new CodeVariableReferenceExpression(item.var_name),
+                        new CodeVariableReferenceExpression(item.start + "- 1")),
+
+                        new CodeBinaryOperatorExpression(
+                            new CodeVariableReferenceExpression(item.var_name),
+                            CodeBinaryOperatorType.LessThan,
+                            new CodeVariableReferenceExpression(item.end)),
+
+                        new CodeAssignStatement(
+                            new CodeVariableReferenceExpression(item.var_name),
+                        new CodeBinaryOperatorExpression(
+                            new CodeVariableReferenceExpression(item.var_name),
+                            CodeBinaryOperatorType.Add,
+                            new CodePrimitiveExpression(1))));
+
+                    
+
+                    string conclude = fs.post.conclude;
+                    conclude = conclude.Replace('(', '[');
+                    conclude = conclude.Replace(')', ']');
+                    
+
+                    if (fs.post.loops.Count == 1)
+                    {
+                        if(item.type == "VM")
+                        {
+                            var_output.InitExpression = new CodePrimitiveExpression(true);
+                            method.Statements.Add(var_output);
+
+                            CodeConditionStatement concludeStatement = new CodeConditionStatement(
+                             new CodeSnippetExpression("!(" + conclude + ")"));
+                            concludeStatement.TrueStatements.Add(new CodeSnippetExpression(var_output.Name + " = false"));
+                            concludeStatement.TrueStatements.Add(new CodeSnippetExpression("break"));
+                            forLoop.Statements.Add(concludeStatement);
+                        }
+                        else
+                        {
+                            var_output.InitExpression = new CodePrimitiveExpression(false);
+                            method.Statements.Add(var_output);
+
+                            CodeConditionStatement concludeStatement = new CodeConditionStatement(
+                             new CodeSnippetExpression("(" + conclude + ")"));
+                            concludeStatement.TrueStatements.Add(new CodeSnippetExpression(var_output.Name + " = true"));
+                            concludeStatement.TrueStatements.Add(new CodeSnippetExpression("break"));
+                            forLoop.Statements.Add(concludeStatement);
+                        }
+                    }
+
+                    foreach (var item2 in fs.post.loops.Skip(1))
+                    {
+                        if (item.type == "VM" && item2.type == "VM")
+                        {
+                            var_output.InitExpression = new CodePrimitiveExpression(true);
+                            method.Statements.Add(var_output);
+
+                            CodeConditionStatement concludeStatement = new CodeConditionStatement(
+                             new CodeSnippetExpression("!(" + conclude + ")"));
+                            concludeStatement.TrueStatements.Add(new CodeSnippetExpression(var_output.Name + " = false"));
+                            concludeStatement.TrueStatements.Add(new CodeSnippetExpression("break"));
+
+                            CodeVariableDeclarationStatement testInt2 =
+                                    new CodeVariableDeclarationStatement(typeof(int),
+                                    item2.var_name,
+                                    new CodePrimitiveExpression(0));
+
+                            CodeIterationStatement forLoop2 = new CodeIterationStatement(
+
+                                    new CodeAssignStatement(
+                                        new CodeVariableReferenceExpression(item2.var_name),
+                                    new CodeVariableReferenceExpression(item2.start)),
+
+                                    new CodeBinaryOperatorExpression(
+                                        new CodeVariableReferenceExpression(item2.var_name),
+                                        CodeBinaryOperatorType.LessThan,
+                                        new CodeVariableReferenceExpression(item2.end)),
+
+                                    new CodeAssignStatement(
+                                        new CodeVariableReferenceExpression(item2.var_name),
+                                    new CodeBinaryOperatorExpression(
+                                        new CodeVariableReferenceExpression(item2.var_name),
+                                        CodeBinaryOperatorType.Add,
+                                        new CodePrimitiveExpression(1))));
+                            forLoop2.Statements.Add(concludeStatement);
+                            forLoop.Statements.Add(testInt2);
+                            forLoop.Statements.Add(forLoop2);
+
+                        }
+
+                        if (item.type == "VM" && item2.type == "TT")
+                        {
+                            var_output.InitExpression = new CodePrimitiveExpression(false);
+                            method.Statements.Add(var_output);
+
+                            CodeConditionStatement concludeStatement = new CodeConditionStatement(
+                             new CodeSnippetExpression("(" + conclude + ")"));
+                            concludeStatement.TrueStatements.Add(new CodeSnippetExpression(var_output.Name + " = true"));
+                            concludeStatement.FalseStatements.Add(new CodeSnippetExpression(var_output.Name + " = false"));
+
+                            CodeVariableDeclarationStatement testInt2 =
+                                    new CodeVariableDeclarationStatement(typeof(int),
+                                    item2.var_name,
+                                    new CodePrimitiveExpression(0));
+
+                            CodeIterationStatement forLoop2 = new CodeIterationStatement(
+
+                                    new CodeAssignStatement(
+                                        new CodeVariableReferenceExpression(item2.var_name),
+                                    new CodeVariableReferenceExpression(item2.start)),
+
+                                    new CodeBinaryOperatorExpression(
+                                        new CodeVariableReferenceExpression(item2.var_name),
+                                        CodeBinaryOperatorType.LessThan,
+                                        new CodeVariableReferenceExpression(item2.end)),
+
+                                    new CodeAssignStatement(
+                                        new CodeVariableReferenceExpression(item2.var_name),
+                                    new CodeBinaryOperatorExpression(
+                                        new CodeVariableReferenceExpression(item2.var_name),
+                                        CodeBinaryOperatorType.Add,
+                                        new CodePrimitiveExpression(1))));
+                            forLoop2.Statements.Add(concludeStatement);
+                            forLoop.Statements.Add(testInt2);
+                            forLoop.Statements.Add(forLoop2);
+
+                        }
+
+                        if (item.type == "TT" && item2.type == "TT")
+                        {
+                            var_output.InitExpression = new CodePrimitiveExpression(false);
+                            method.Statements.Add(var_output);
+
+                            CodeConditionStatement concludeStatement = new CodeConditionStatement(
+                             new CodeSnippetExpression("(" + conclude + ")"));
+                            concludeStatement.TrueStatements.Add(new CodeSnippetExpression(var_output.Name + " = true"));
+                            concludeStatement.TrueStatements.Add(new CodeSnippetExpression("break"));
+
+                            CodeVariableDeclarationStatement testInt2 =
+                                    new CodeVariableDeclarationStatement(typeof(int),
+                                    item2.var_name,
+                                    new CodePrimitiveExpression(0));
+
+                            CodeIterationStatement forLoop2 = new CodeIterationStatement(
+
+                                    new CodeAssignStatement(
+                                        new CodeVariableReferenceExpression(item2.var_name),
+                                    new CodeVariableReferenceExpression(item2.start)),
+
+                                    new CodeBinaryOperatorExpression(
+                                        new CodeVariableReferenceExpression(item2.var_name),
+                                        CodeBinaryOperatorType.LessThan,
+                                        new CodeVariableReferenceExpression(item2.end)),
+
+                                    new CodeAssignStatement(
+                                        new CodeVariableReferenceExpression(item2.var_name),
+                                    new CodeBinaryOperatorExpression(
+                                        new CodeVariableReferenceExpression(item2.var_name),
+                                        CodeBinaryOperatorType.Add,
+                                        new CodePrimitiveExpression(1))));
+                            forLoop2.Statements.Add(concludeStatement);
+                            forLoop.Statements.Add(testInt2);
+                            forLoop.Statements.Add(forLoop2);
+
+                        }
+                    }
+
+                    method.Statements.Add(testInt);
+                    method.Statements.Add(forLoop);
+
+                }
+                    
+                else
+                {
+                    method.Statements.Add(var_output);
+                    foreach (var item in fs.post.cases)
                     {
                         if (item.Contains("&&"))
                         {
@@ -184,9 +366,6 @@ namespace MyCODEDOM
                         {
                             method.Statements.Add(new CodeSnippetExpression(fs.post.GetStringInit(item)));
                         }
-                    }
-                    else
-                    {
 
                     }
                 }
@@ -267,7 +446,7 @@ namespace MyCODEDOM
                         CodeVariableDeclarationStatement codeVariableDeclaration
                             = new CodeVariableDeclarationStatement(para.GetTypeFormat(),
                             para.var_name,
-                            new CodeArrayCreateExpression("System.Double", 1000));
+                            new CodeArrayCreateExpression("System.Int32", 1000));
 
                         start.Statements.Add(codeVariableDeclaration);
 

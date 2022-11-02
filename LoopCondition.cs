@@ -12,5 +12,9 @@ namespace Formal_Specification
         public string type { get; set; }
         public string condition { get; set; }
 
+        public string start { get; set; }
+        public string end { get; set; }
+
+
     }
 }
