@@ -153,7 +153,6 @@ namespace Formal_Specification
             // 
             // toolStrip1
             // 
-            this.toolStrip1.ImageScalingSize = new System.Drawing.Size(20, 20);
             this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.newToolStripButton,
             this.openToolStripButton,
@@ -165,7 +164,7 @@ namespace Formal_Specification
             this.toolStrip1.Name = "toolStrip1";
             this.toolStrip1.Padding = new System.Windows.Forms.Padding(0);
             this.toolStrip1.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
-            this.toolStrip1.Size = new System.Drawing.Size(1348, 27);
+            this.toolStrip1.Size = new System.Drawing.Size(1348, 25);
             this.toolStrip1.TabIndex = 1;
             this.toolStrip1.TabStop = true;
             this.toolStrip1.Text = "toolStrip1";
@@ -176,7 +175,7 @@ namespace Formal_Specification
             this.newToolStripButton.Image = global::Formal_Specification.Properties.Resources.new_document;
             this.newToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.newToolStripButton.Name = "newToolStripButton";
-            this.newToolStripButton.Size = new System.Drawing.Size(29, 24);
+            this.newToolStripButton.Size = new System.Drawing.Size(29, 22);
             this.newToolStripButton.Text = "New";
             this.newToolStripButton.Click += new System.EventHandler(this.newToolStripItem_Click);
             // 
@@ -186,7 +185,7 @@ namespace Formal_Specification
             this.openToolStripButton.Image = global::Formal_Specification.Properties.Resources.open_folder;
             this.openToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.openToolStripButton.Name = "openToolStripButton";
-            this.openToolStripButton.Size = new System.Drawing.Size(29, 24);
+            this.openToolStripButton.Size = new System.Drawing.Size(29, 22);
             this.openToolStripButton.Text = "Open New File";
             this.openToolStripButton.Click += new System.EventHandler(this.openToolStripItem_Click);
             // 
@@ -196,14 +195,14 @@ namespace Formal_Specification
             this.saveToolStripButton.Image = global::Formal_Specification.Properties.Resources.save_file;
             this.saveToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.saveToolStripButton.Name = "saveToolStripButton";
-            this.saveToolStripButton.Size = new System.Drawing.Size(29, 24);
+            this.saveToolStripButton.Size = new System.Drawing.Size(29, 22);
             this.saveToolStripButton.Text = "Save";
             this.saveToolStripButton.Click += new System.EventHandler(this.saveToolStripItem_Click);
             // 
             // toolStripSeparator2
             // 
             this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(6, 27);
+            this.toolStripSeparator2.Size = new System.Drawing.Size(6, 25);
             // 
             // cutToolStripButton
             // 
@@ -211,7 +210,7 @@ namespace Formal_Specification
             this.cutToolStripButton.Image = global::Formal_Specification.Properties.Resources.scissors;
             this.cutToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.cutToolStripButton.Name = "cutToolStripButton";
-            this.cutToolStripButton.Size = new System.Drawing.Size(29, 24);
+            this.cutToolStripButton.Size = new System.Drawing.Size(29, 22);
             this.cutToolStripButton.Text = "Cut";
             // 
             // copyToolStripButton
@@ -220,7 +219,7 @@ namespace Formal_Specification
             this.copyToolStripButton.Image = global::Formal_Specification.Properties.Resources.copy;
             this.copyToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.copyToolStripButton.Name = "copyToolStripButton";
-            this.copyToolStripButton.Size = new System.Drawing.Size(29, 24);
+            this.copyToolStripButton.Size = new System.Drawing.Size(29, 22);
             this.copyToolStripButton.Text = "Copy";
             // 
             // panel1
