@@ -89,7 +89,7 @@ namespace MyCODEDOM
                     "ReadLine")));
                     start.Statements.Add(codeVariableDeclaration);
                 }
-                else if(para.GetTypeFormat() == "System.Boolean")
+                else if(para.GetTypeFormat() == "System.String")
                 {
                     arraySize = para;
 
@@ -110,15 +110,17 @@ namespace MyCODEDOM
             //Get var init
             if (fs.output.GetTypeFormat() == "System.String")
                 var_output.InitExpression = new CodePrimitiveExpression("");
-            if (fs.output.GetTypeFormat() == "System.Double")
+            else if (fs.output.GetTypeFormat() == "System.Double")
                 var_output.InitExpression = new CodePrimitiveExpression(0);
-            if (fs.output.GetTypeFormat() == "System.Int32")
+            else if (fs.output.GetTypeFormat() == "System.Int32")
                 var_output.InitExpression = new CodePrimitiveExpression(0);
-            if (fs.output.GetTypeFormat() == "System.Boolean")
+            else if (fs.output.GetTypeFormat() == "System.Boolean")
                 var_output.InitExpression = new CodePrimitiveExpression(true);
             //Pre, post handle
             if (!fs.pre.isEmptyOrWhiteSpace()) //pre contain condition
             {
+                method.Statements.Add(var_output);
+
                 CodeConditionStatement ifElse = new CodeConditionStatement(
                     new CodeSnippetExpression(fs.pre.condition));
                 foreach(var item in fs.post.cases) // post handle
@@ -129,7 +131,6 @@ namespace MyCODEDOM
                     }
                     else
                     {
-                        method.Statements.Add(var_output);
                         if (item.Contains("&&"))
                         {
                             CodeConditionStatement insideIfElse = new CodeConditionStatement(
@@ -154,7 +155,6 @@ namespace MyCODEDOM
                 ifElse.FalseStatements.Add(new CodeMethodReturnStatement(new CodeArgumentReferenceExpression(fs.output.var_name)));
                 method.Statements.Add(ifElse);
             }
-            
             else //pre not contain condition
             {
                 if (hasArray(fs))
@@ -198,7 +198,7 @@ namespace MyCODEDOM
                             concludeStatement.TrueStatements.Add(new CodeSnippetExpression("break"));
                             forLoop.Statements.Add(concludeStatement);
                         }
-                        else //item.type == "VM"
+                        else //item.type == "TT"
                         {
                             var_output.InitExpression = new CodePrimitiveExpression(false);
                             method.Statements.Add(var_output);

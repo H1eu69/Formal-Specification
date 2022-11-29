@@ -14,17 +14,18 @@ using Microsoft.CSharp;
 using MyCODEDOM;
 using System.CodeDom.Compiler;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
+using System.Xml.Linq;
 
 namespace Formal_Specification
 {
     public partial class Form1 : Form
     {
+        private string selectedTextBox = "";
         public FSComponent FSComponent { get; set; }
         public Form1()
         {
             InitializeComponent();
-            toolStrip1.ImageScalingSize = new Size(40, 40);
-
+            toolStrip1.ImageScalingSize = new Size(16, 16);
         }
 
         private void label1_Click(object sender, EventArgs e)
@@ -57,10 +58,12 @@ namespace Formal_Specification
             openFileDialog.Filter = "txt files (*.txt)|*.txt|All files (*.*)|*.*";
             if (openFileDialog.ShowDialog() == DialogResult.OK)
             {
+                classNameTextBox.Text = "Program";
+                ExeFileNameTextBox.Text = "Application.exe";
                 inputRichTextBox.Text = File.ReadAllText(openFileDialog.FileName);
+                FSComponent = new FSComponent(inputRichTextBox.Text);
+                HighlightInput();
             }
-            classNameTextBox.Text = "Program";
-            ExeFileNameTextBox.Text = "Application.exe";
         }
 
         private void openToolStripItem_Click(object sender, EventArgs e)
@@ -73,8 +76,6 @@ namespace Formal_Specification
                 ExeFileNameTextBox.Text = "Application.exe";
                 inputRichTextBox.Text = File.ReadAllText(openFileDialog.FileName);
                 FSComponent = new FSComponent(inputRichTextBox.Text);
-
-                //Highlight input
                 HighlightInput();
             }
         }
@@ -328,7 +329,16 @@ namespace Formal_Specification
 
         private void toolStripMenuItem1_Click(object sender, EventArgs e)
         {
+            SaveFileDialog saveFileDialog1 = new SaveFileDialog();
 
+            saveFileDialog1.Filter = "CSharp (*.cs)|*.cs|All files (*.*)|*.*";
+
+            if (saveFileDialog1.ShowDialog() == DialogResult.OK)
+            {
+                StreamWriter file = new StreamWriter(saveFileDialog1.FileName.ToString());
+                file.WriteLine(inputRichTextBox.Text);
+                file.Close();
+            }
         }
 
         private void exitToolStripMenuItem_Click_1(object sender, EventArgs e)
@@ -399,9 +409,104 @@ namespace Formal_Specification
 
         }
 
+        private void cutToolStripButton_Click(object sender, EventArgs e)
+        {
+            if (selectedTextBox == "input")
+            {
+                inputRichTextBox.SelectAll();
+                Clipboard.SetText(inputRichTextBox.SelectedText);
+                inputRichTextBox.Text = "";
+            }
+            else if (selectedTextBox == "solution")
+            {
+                solutionRichTextBox.SelectAll();
+                Clipboard.SetText(solutionRichTextBox.SelectedText);
+                solutionRichTextBox.Text = "";
+            }
+        }
 
-        
+        private void copyToolStripButton_Click(object sender, EventArgs e)
+        {
+            if (selectedTextBox == "input")
+            {
+                inputRichTextBox.SelectAll();
+                Clipboard.SetText(inputRichTextBox.SelectedText);
+            }
+            else if (selectedTextBox == "solution")
+            {
+                solutionRichTextBox.SelectAll();
+                Clipboard.SetText(solutionRichTextBox.SelectedText);
+            }
+        }
 
+        private void inputRichTextBox_Enter(object sender, EventArgs e)
+        {
+            selectedTextBox = "input";
+        }
+
+        private void solutionRichTextBox_Enter(object sender, EventArgs e)
+        {
+            selectedTextBox = "solution";
+        }
+
+        private void cutToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (selectedTextBox == "input")
+            {
+                inputRichTextBox.SelectAll();
+                Clipboard.SetText(inputRichTextBox.SelectedText);
+                inputRichTextBox.Text = "";
+            }
+            else if (selectedTextBox == "solution")
+            {
+                solutionRichTextBox.SelectAll();
+                Clipboard.SetText(solutionRichTextBox.SelectedText);
+                solutionRichTextBox.Text = "";
+            }
+        }
+
+        private void copyToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (selectedTextBox == "input")
+            {
+                inputRichTextBox.SelectAll();
+                Clipboard.SetText(inputRichTextBox.SelectedText);
+            }
+            else if (selectedTextBox == "solution")
+            {
+                solutionRichTextBox.SelectAll();
+                Clipboard.SetText(solutionRichTextBox.SelectedText);
+            }
+        }
+
+        private void pasteToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (selectedTextBox == "input")
+            {
+                inputRichTextBox.Text = inputRichTextBox.Text + Clipboard.GetText();
+            }
+            else if (selectedTextBox == "solution")
+            {
+                solutionRichTextBox.Text = solutionRichTextBox.Text + Clipboard.GetText();
+            }
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+
+        }
+
+        private void toolStripButton1_Click(object sender, EventArgs e)
+        {
+            if (selectedTextBox == "input")
+            {
+                inputRichTextBox.Text = inputRichTextBox.Text + Clipboard.GetText();
+            }
+            else if (selectedTextBox == "solution")
+            {
+                solutionRichTextBox.Text = solutionRichTextBox.Text + Clipboard.GetText();
+            }
+        }
     }
 
 }

@@ -110,10 +110,12 @@ namespace Formal_Specification
                     else
                     {
                         result = input.Substring(i, input.IndexOf(')') - count).ToString();
+                        if (result.Contains("TRUE"))
+                            result = result.Replace("TRUE", "true");
+                        if (result.Contains("FALSE"))
+                            result = result.Replace("FALSE", "false");
                         return result;
                     }
-
-
                 }
                 return result;
             }
@@ -126,10 +128,22 @@ namespace Formal_Specification
         {
             if (input.Contains("&&"))
             {
-                string temp = input.Remove(1, GetStringInit(input).Length + 4);
-                temp = temp.Remove(0, 1);
-                temp = temp.Remove(temp.LastIndexOf(')'), 1);
-                return temp;
+                string output = input.Remove(1, GetStringInit(input).Length + 4);
+                output = output.Remove(0, 1);
+                output = output.Remove(output.LastIndexOf(')'), 1);
+                int loopCount = output.Length;
+                for(int i = 0;i < loopCount; i++)
+                {
+                    if (output[i] == '='
+                        && output[i - 1] != '!'
+                        && output[i - 1] != '<'
+                        && output[i - 1] != '>'
+                        && output[i - 1] != '=')
+                    {
+                        output = output.Substring(0, i + 1) + '=' + output.Substring(i + 1);
+                    }
+                }
+                return output;
             }
             return input;
         }
